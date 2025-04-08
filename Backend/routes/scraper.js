@@ -1,81 +1,67 @@
 const express = require('express');
 const router = express.Router();
 const axios = require('axios');
-const puppeteer = require('puppeteer');
 
-// Function to search books from OpenLibrary
+// Function: Search books from OpenLibrary
 async function searchBook(bookName) {
   try {
-    const response = await axios.get(`https://openlibrary.org/search.json?q=${bookName}`);
-    const books = response.data.docs.slice(0, 10).map(book => ({
+    const { data } = await axios.get(`https://openlibrary.org/search.json?q=${bookName}`);
+    return data.docs.slice(0, 10).map(book => ({
       title: book.title,
       author: book.author_name?.[0] || 'Unknown',
       cover: book.cover_i
         ? `https://covers.openlibrary.org/b/id/${book.cover_i}-M.jpg`
         : 'https://media.istockphoto.com/id/508545844/photo/question-mark-from-books-searching-information-or-faq-edication.jpg?s=612x612&w=0&k=20&c=-RTL7PuuaYZWifHcE4lvNFjqPY_J9VpqMNegcc3sdgA='
     }));
-    return books;
   } catch (error) {
-    console.error('Error fetching book details:', error.message);
+    console.error('OpenLibrary error:', error.message);
     return [];
   }
 }
 
-// Route: Search books from OpenLibrary
+// Route: Book Search
 router.post('/book', async (req, res) => {
-  const productName = req.body.name;
-  if (!productName) {
-    return res.status(400).json({ error: 'Book name is required.' });
-  }
-  const products = await searchBook(productName);
-  return res.json(products);
+  const { name } = req.body;
+  if (!name) return res.status(400).json({ error: 'Book name is required.' });
+
+  const books = await searchBook(name);
+  res.json(books);
 });
 
-// Function to fetch Reddit reviews
-async function scrapeReddit(bookTitle) {
-  const query = encodeURIComponent(`${bookTitle} book review`);
-  const url = `https://www.reddit.com/search.json?q=${query}&type=link&sort=hot`;
-
-  const reviews = [];
-
+// Function: Fetch Google Books review-like data
+async function fetchGoogleBooksReviews(bookTitle) {
   try {
-    const { data } = await axios.get(url, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0'
-      }
-    });
+    const { data } = await axios.get(
+      `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(bookTitle)}`,
+      { timeout: 10000 }
+    );
 
-    const posts = data.data.children;
-
-    posts.forEach(post => {
-      const postData = post.data;
-      reviews.push({
-        source: 'Reddit',
-        title: postData.title,
-        snippet: postData.selftext?.slice(0, 300) || 'No content available.',
-        url: `https://www.reddit.com${postData.permalink}`
-      });
-    });
-
-    return reviews;
-
-  } catch (err) {
-    console.error('Reddit JSON API error:', err.message);
-    return [{ source: 'Reddit', error: err.message }];
+    return (data.items || []).slice(0, 10).map(item => ({
+      title: item.volumeInfo.title || bookTitle,
+      body: item.volumeInfo.description || 'No description available',
+      url: item.volumeInfo.infoLink || ''
+    }));
+  } catch (error) {
+    console.error('Google Books API error:', error.message);
+    throw new Error('Failed to fetch Google Books reviews');
   }
 }
 
-// Route: Get Reddit + Google Blog reviews
+// Route: Get Book Reviews
 router.post('/review', async (req, res) => {
   const { bookTitle } = req.body;
+  if (!bookTitle) return res.status(400).json({ error: 'bookTitle is required.' });
 
-  if (!bookTitle) {
-    return res.status(400).json({ error: 'bookTitle is required' });
+  try {
+    const reviews = await fetchGoogleBooksReviews(bookTitle);
+    res.json({
+      book: bookTitle,
+      reviews,
+      message: reviews.length === 0 ? 'No reviews found on Google Books' : undefined
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
-
-  const redditReviews = await scrapeReddit(bookTitle);
-
-  res.json({ book: bookTitle, reviews: redditReviews });
 });
 
 module.exports = router;

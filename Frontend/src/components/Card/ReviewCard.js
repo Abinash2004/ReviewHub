@@ -75,7 +75,7 @@ const ReviewCard = () => {
               <h3 className="mt-1 text-[25px] text-slate-400 self-start font-semibold">
                 {formatTitle(review.title)}
               </h3>
-              <h3 className="mt-4 text-l text-slate-500 self-start">{review.snippet}</h3>
+              <h3 className="mt-4 text-l text-slate-500 self-start">{review.body}</h3>
             </div>
           </div>
         ))
