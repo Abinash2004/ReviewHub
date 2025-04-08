@@ -4,8 +4,8 @@
   "description": "Backend for the Review Hub application",
   "main": "index.js",
   "scripts": {
-    "start": "node backend/index.js",
-    "dev": "node backend/index.js",
+    "start": "node Backend/index.js",
+    "dev": "node Backend/index.js",
     "build": "npm install && npm install --prefix Frontend && npm run build --prefix Frontend",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
