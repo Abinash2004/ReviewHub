@@ -18,7 +18,7 @@ const ProductCard = ({ reviewRef }) => {
       setError(null);
 
       try {
-        const response = await fetch("http://localhost:5000/search/book", {
+        const response = await fetch("https://reviewhub-v62d.onrender.com/search/book", {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

@@ -15,7 +15,7 @@ const ReviewCard = () => {
       setError(null);
 
       try {
-        const response = await fetch("http://localhost:5000/search/review", {
+        const response = await fetch("https://reviewhub-v62d.onrender.com/search/review", {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

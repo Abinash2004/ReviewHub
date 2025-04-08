@@ -9,7 +9,10 @@ const app = express();
 connectToMongo();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: 'https://reviewhub-v62d.onrender.com', // 👈 Allow frontend to call backend
+  credentials: true
+}));
 app.use(express.json());
 
 // Available Routes
@@ -19,13 +22,14 @@ app.use('/search', require('./routes/scraper'));
 
 // Deployment Setup
 const _dirname = path.resolve();
-app.use(express.static(path.join(_dirname, "/Frontend/build")));
+app.use(express.static(path.join(_dirname, "Frontend", "build")));
 
 app.get('*', (_, res) => {
   res.sendFile(path.resolve(_dirname, "Frontend", "build", "index.html"));
 });
 
-// Start Server
-app.listen(5000, () => {
-  console.log("Review-hub is running on port 5000");
+// Start Server on dynamic port (Render needs this)
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(`Review-hub is running on port ${PORT}`);
 });

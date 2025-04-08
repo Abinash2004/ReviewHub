@@ -11,7 +11,7 @@ export const ReviewProvider = (props) => {
     const getAllReview = async () => {
 
         try {
-            const response = await fetch("http://localhost:5000/review/fetchallreviews", {
+            const response = await fetch("https://reviewhub-v62d.onrender.com/review/fetchallreviews", {
                 method: 'GET',
                 headers: {
                   'Content-Type': 'application/json',
@@ -28,7 +28,7 @@ export const ReviewProvider = (props) => {
 
     const addReview = async (product, title, description, rating) => {
         try {
-            const response = await fetch("http://localhost:5000/review/addreview", {
+            const response = await fetch("https://reviewhub-v62d.onrender.com/review/addreview", {
                 method: 'POST',
                 headers: {
                   'Content-Type': 'application/json',
