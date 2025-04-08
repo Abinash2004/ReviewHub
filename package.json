@@ -1,0 +1,41 @@
+{
+  "name": "review-hub",
+  "version": "1.0.0",
+  "description": "Backend for the Review Hub application",
+  "main": "index.js",
+  "scripts": {
+    "start": "node backend/index.js",
+    "dev": "node backend/index.js",
+    "build": "npm install && npm install --prefix Frontend && npm run build --prefix Frontend",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Abinash",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.7.7",
+    "cheerio": "^1.0.0",
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "express-validator": "^7.2.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.7.0",
+    "nodemon": "^3.1.9",
+    "puppeteer": "^24.6.0",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2"
+  },
+  "keywords": [
+    "backend",
+    "express",
+    "review",
+    "scraping",
+    "api"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/review-hub-backend"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/review-hub-backend/issues"
+  }
+}
